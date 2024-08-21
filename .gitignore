@@ -1,0 +1,59 @@
+# Node.js
+node_modules/
+**/node_modules/
+
+# Logs
+logs/
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+.yarn/*
+.pnp.*
+
+# Environment Variables
+.env
+**/.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# Compiled source
+dist/
+build/
+out/
+**/dist/
+**/build/
+**/out/
+
+# Coverage
+coverage/
+**/coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional React Native
+.expo/
+.expo-shared/
