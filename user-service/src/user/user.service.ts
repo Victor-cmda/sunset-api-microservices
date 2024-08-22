@@ -80,4 +80,15 @@ export class UserService {
       throw new RpcException(error.message);
     }
   }
+
+  async findUserByEmail(email: string): Promise<User | undefined> {
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (!user) throw new RpcException('Usuário não encontrado.');
+      return user;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  }
 }
