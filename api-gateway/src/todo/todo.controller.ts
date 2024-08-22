@@ -1,61 +1,51 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Put,
-  Delete,
   Body,
-  Param,
-  Req,
-  ParseUUIDPipe,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Query,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
-import { CreateTodoItemDto, CreateTodoListDto } from './dto/create-todo.dto';
-import { UpdateTodoItemDto } from './dto/update-todo.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { QueryTodoDto } from './dto/query-todo.dto';
-import {
-  IndexTodoItemSwagger,
-  IndexTodoListSwagger,
-} from './swagger/index-todo.swagger';
-import { plainToInstance } from 'class-transformer';
 import {
   ResponseTodoItemDto,
   ResponseTodoListDto,
 } from './dto/response-todo.dto';
+import { CreateTodoItemDto, CreateTodoListDto } from './dto/create-todo.dto';
+import { plainToInstance } from 'class-transformer';
 
-@Controller('api/v1/todos')
+@Controller('api/todos')
 @ApiTags('Todos')
 export class TodoController {
-  constructor(private todoService: TodoService) {}
+  constructor(private readonly todoService: TodoService) {}
 
   @Post('list')
   @ApiOperation({ summary: 'Adiciona uma nova lista de tarefas' })
   @ApiResponse({
     status: 200,
     description: 'Lista de tarefas criada com sucesso',
-    type: IndexTodoListSwagger,
+    type: ResponseTodoListDto,
     isArray: true,
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
-  async createList(@Body() body: CreateTodoListDto, @Req() req: any) {
-    const listItem = await this.todoService.createList(
-      body.name,
-      body.color,
-      req.user,
-    );
-    return plainToInstance(ResponseTodoListDto, listItem);
+  async createUser(
+    @Body() todoListDto: CreateTodoListDto,
+  ): Promise<ResponseTodoListDto> {
+    const result = await this.todoService.createList(todoListDto);
+    return plainToInstance(ResponseTodoListDto, result);
   }
 
-  @Get('lists')
+  @Get('lists/:userId')
   @ApiOperation({ summary: 'Consulta uma ou mais listas de tarefas' })
   @ApiResponse({
     status: 200,
     description: 'Listas de tarefas encontradas',
-    type: IndexTodoListSwagger,
+    type: ResponseTodoListDto,
     isArray: true,
   })
   @ApiResponse({ status: 400, description: 'Erro ao buscar listas de tarefas' })
@@ -63,8 +53,8 @@ export class TodoController {
     status: 404,
     description: 'Nenhuma lista de tarefas encontrada',
   })
-  async findAllLists(@Query() query: QueryTodoDto, @Req() req: any) {
-    const listItem = await this.todoService.findAllLists(req.user.userId);
+  async findAllLists(@Param('userId', new ParseUUIDPipe()) userId: string) {
+    const listItem = await this.todoService.findAllLists(userId);
     return plainToInstance(ResponseTodoListDto, listItem);
   }
 
@@ -73,7 +63,7 @@ export class TodoController {
   @ApiResponse({
     status: 200,
     description: 'Lista de tarefas atualizada',
-    type: IndexTodoListSwagger,
+    type: ResponseTodoListDto,
   })
   @ApiResponse({
     status: 404,
@@ -81,22 +71,27 @@ export class TodoController {
   })
   async updateList(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() body: CreateTodoListDto,
-  ) {
-    const listItem = await this.todoService.updateList(id, body);
-    return plainToInstance(ResponseTodoListDto, listItem);
+    @Body() todoListDto: CreateTodoListDto,
+  ): Promise<string> {
+    return await this.todoService.updateList(id, todoListDto);
   }
 
   @Delete('list/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Deleta uma lista de tarefas' })
-  @ApiResponse({ status: 204, description: 'Lista de tarefas deletada' })
+  @ApiOperation({ summary: 'Consulta uma ou mais listas de tarefas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listas de tarefas encontradas',
+    type: ResponseTodoListDto,
+  })
+  @ApiResponse({ status: 400, description: 'Erro ao buscar listas de tarefas' })
   @ApiResponse({
     status: 404,
-    description: 'Nenhuma lista de tarefas encontrada com o ID informado',
+    description: 'Nenhuma lista de tarefas encontrada',
   })
-  async deleteList(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.todoService.deleteList(id);
+  async deleteLists(@Param('id', new ParseUUIDPipe()) id: string) {
+    const listItem = await this.todoService.deleteList(id);
+    return plainToInstance(ResponseTodoListDto, listItem);
   }
 
   @Post('item/:listId')
@@ -104,14 +99,14 @@ export class TodoController {
   @ApiResponse({
     status: 200,
     description: 'Item adicionado com sucesso',
-    type: IndexTodoItemSwagger,
+    type: CreateTodoItemDto,
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   async createItem(
     @Param('listId', new ParseUUIDPipe()) listId: string,
-    @Body() body: CreateTodoItemDto,
+    @Body() todoItemDto: CreateTodoItemDto,
   ) {
-    const item = await this.todoService.createItem(listId, body.name);
+    const item = await this.todoService.createItem(listId, todoItemDto);
     return plainToInstance(ResponseTodoItemDto, item);
   }
 
@@ -120,16 +115,18 @@ export class TodoController {
   @ApiResponse({
     status: 200,
     description: 'Item atualizado com sucesso',
-    type: IndexTodoItemSwagger,
+    type: ResponseTodoItemDto,
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   @ApiResponse({
     status: 404,
     description: 'Nenhum item encontrado com o ID informado',
   })
-  async updateItem(@Param('id') id: number, @Body() body: UpdateTodoItemDto) {
-    const item = await this.todoService.updateItem(id, body);
-    return plainToInstance(ResponseTodoItemDto, item);
+  async updateItem(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() todoItemDto: CreateTodoItemDto,
+  ) {
+    return await this.todoService.updateItem(id, todoItemDto);
   }
 
   @Delete('item/:id')
@@ -140,7 +137,7 @@ export class TodoController {
     status: 404,
     description: 'Nenhum item encontrado com o ID informado',
   })
-  async deleteItem(@Param('id') id: number) {
+  async deleteItem(@Param('id', new ParseUUIDPipe()) id: string) {
     const item = await this.todoService.deleteItem(id);
     return plainToInstance(ResponseTodoItemDto, item);
   }

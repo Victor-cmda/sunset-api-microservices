@@ -12,10 +12,14 @@
     "start:gateway": "npm --prefix api-gateway start",
     "start:auth": "npm --prefix auth-service start",
     "start:user": "npm --prefix user-service start",
-    "start:todo": "npm --prefix todo-service start"
+    "start:todo": "npm --prefix todo-service start",
+    "start:all": "npm run start:gateway & npm run start:auth & npm run start:user & npm run start:todo"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@nestjs/platform-express": "^10.4.1"
+  }
 }

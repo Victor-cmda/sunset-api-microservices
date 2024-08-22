@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { User } from '../../user/entity/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'todo_list' })
@@ -25,12 +24,12 @@ export class TodoList {
   @ApiProperty()
   color: string;
 
-  @ManyToOne(() => User, (user) => user.todoLists)
+  @Column({ name: 'user_id' })
   @ApiProperty()
-  user: User;
+  userId: string;
 
-  @OneToMany(() => TodoItem, (todoItem) => todoItem.todoList)
-  @ApiProperty()
+  @OneToMany(() => TodoItem, (todoItem) => todoItem.todoList, { eager: true })
+  @ApiProperty({ type: () => [TodoItem] })
   items: TodoItem[];
 
   @CreateDateColumn({ name: 'created_at' })

@@ -2,12 +2,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { TodoList } from '../../todo/entity/todo.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'users' })
@@ -26,9 +24,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @OneToMany(() => TodoList, (todoList) => todoList.user)
-  todoLists: TodoList[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: string;

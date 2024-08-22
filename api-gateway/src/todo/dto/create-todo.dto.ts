@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsHexColor, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsHexColor, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 
 export class CreateTodoItemDto {
   @IsNotEmpty({
@@ -34,4 +34,11 @@ export class CreateTodoListDto {
   })
   @ApiProperty()
   color: string;
+
+  @IsNotEmpty({
+    message: 'O campo de cor não pode estar vazio',
+  })
+  @ApiProperty()
+  @IsUUID()
+  userId: string;
 }

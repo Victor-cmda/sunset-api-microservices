@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './app/user/user.module';
-import { TodoModule } from './app/todo/todo.module';
+import { TodoModule } from './todo/todo.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TodoItem, TodoList } from './todo/entity/todo.entity';
 
 @Module({
   imports: [
+    TodoModule,
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: './src/.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -16,14 +18,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('DB_USERNAME', 'postgres'),
         password: configService.get('DB_PASSWORD', '1234'),
         database: configService.get('DB_DATABASE', 'postgres'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        schema: configService.get('DB_SCHEMA', 'public'),
+        entities: [TodoItem, TodoList],
         synchronize: true,
       }),
     }),
-    UserModule,
-    TodoModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

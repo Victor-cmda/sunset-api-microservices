@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
 export class ResponseTodoListDto {
@@ -18,7 +18,8 @@ export class ResponseTodoListDto {
   deletedAt: string;
 
   @Expose()
-  todoItems: ResponseTodoItemDto[];
+  @Type(() => ResponseTodoItemDto)
+  items: ResponseTodoItemDto[];
 }
 
 @Exclude()
