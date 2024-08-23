@@ -1,28 +1,17 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { isUUID } from 'class-validator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @MessagePattern('create_user')
-  async register(@Payload() payload: CreateUserDto): Promise<ResponseUserDto> {
-    if (payload.password !== payload.passwordConfirmation) {
-      throw new RpcException('As senhas não coincidem');
-    }
-    const user = await this.userService.createUser(
-      payload.name,
-      payload.email,
-      payload.password,
-    );
-    return plainToInstance(ResponseUserDto, user);
-  }
-
+  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('get_user')
   async getUser(@Payload() data: { id: string }): Promise<ResponseUserDto> {
     const { id } = data;
@@ -37,6 +26,7 @@ export class UserController {
     return plainToInstance(ResponseUserDto, user);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('update_user')
   async updateUser(
     @Payload() payload: { id: string; userDto: CreateUserDto },
@@ -53,6 +43,7 @@ export class UserController {
     return await this.userService.updateUser(id, userDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('delete_user')
   async deleteUser(@Payload() payload: { id: string }): Promise<string> {
     const { id } = payload;
