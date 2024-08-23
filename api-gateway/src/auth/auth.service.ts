@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { omit } from 'lodash';
