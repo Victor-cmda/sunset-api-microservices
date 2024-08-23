@@ -4,6 +4,7 @@ import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { ResponseUserDto } from 'src/user/dto/response-user.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +23,13 @@ export class AuthController {
     return plainToInstance(ResponseUserDto, user);
   }
 
-  @MessagePattern('create_user')
-  signIn(@Payload() payload: Record<string, any>) {
-    return this.authService.signIn(payload.username, payload.password);
+  @MessagePattern('login')
+  signIn(@Payload() loginDto: LoginDto) {
+    return this.authService.signIn(loginDto.email, loginDto.password);
+  }
+
+  @MessagePattern('refresh_token')
+  refreshToken(@Payload() loginDto: LoginDto) {
+    return this.authService.signIn(loginDto.email, loginDto.password);
   }
 }

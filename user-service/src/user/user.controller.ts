@@ -7,11 +7,11 @@ import { ResponseUserDto } from './dto/response-user.dto';
 import { isUUID } from 'class-validator';
 import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('get_user')
   async getUser(@Payload() data: { id: string }): Promise<ResponseUserDto> {
     const { id } = data;
@@ -26,7 +26,6 @@ export class UserController {
     return plainToInstance(ResponseUserDto, user);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('update_user')
   async updateUser(
     @Payload() payload: { id: string; userDto: CreateUserDto },
@@ -43,7 +42,6 @@ export class UserController {
     return await this.userService.updateUser(id, userDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @MessagePattern('delete_user')
   async deleteUser(@Payload() payload: { id: string }): Promise<string> {
     const { id } = payload;

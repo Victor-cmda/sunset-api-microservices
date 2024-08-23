@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -18,7 +19,9 @@ import {
 } from './dto/response-todo.dto';
 import { CreateTodoItemDto, CreateTodoListDto } from './dto/create-todo.dto';
 import { plainToInstance } from 'class-transformer';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('api/todos')
 @ApiTags('Todos')
 export class TodoController {
