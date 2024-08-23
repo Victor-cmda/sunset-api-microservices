@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     UserModule,
+    AuthModule,
     ConfigModule.forRoot({ isGlobal: true, envFilePath: './src/.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -24,7 +25,6 @@ import { AuthModule } from './auth/auth.module';
         synchronize: true,
       }),
     }),
-    AuthModule,
   ],
 })
 export class AppModule {}

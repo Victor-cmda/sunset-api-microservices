@@ -5,6 +5,8 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { omit } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
+import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,18 +15,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findUserByEmail(email);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
+  async signIn(email: string, pass: string): Promise<TokenDto> {
+    try {
+      const user = await this.usersService.findUserByEmail(email);
+      console.log(user);
+      if (!user || !(await bcrypt.compare(pass, user.password))) {
+        throw new UnauthorizedException();
+      }
+      const { ...result } = omit(user, ['password']);
+      const payload = { email: result.email, sub: result.id };
+      const token = this.jwtService.sign(payload);
+      return plainToInstance(TokenDto, {
+        access_token: token,
+        expires_in: 3600,
+      });
+    } catch (error) {
+      throw new RpcException(error.message);
     }
-    const { password, ...result } = user;
-    console.log(password);
-    const payload = { email: result.email, sub: result.id };
-    const token = this.jwtService.sign(payload);
-    return {
-      access_token: token,
-    };
   }
 
   async registerUser(

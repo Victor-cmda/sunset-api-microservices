@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 import { lastValueFrom } from 'rxjs';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { TokenDto } from 'src/auth/dto/token.dto';
 
 @Injectable()
 export class UserService {
@@ -65,7 +66,7 @@ export class UserService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<TokenDto> {
     try {
       const response = await lastValueFrom(
         this.rabbitClient.send('login', loginDto),

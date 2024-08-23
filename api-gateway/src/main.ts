@@ -22,7 +22,10 @@ async function bootstrap() {
   registerGlobals(app);
 
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
   );
 
   await app.listen(3000);

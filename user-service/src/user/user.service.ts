@@ -83,7 +83,9 @@ export class UserService {
 
   async findUserByEmail(email: string): Promise<User | undefined> {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
       if (!user) throw new RpcException('Usuário não encontrado.');
       return user;
     } catch (error) {

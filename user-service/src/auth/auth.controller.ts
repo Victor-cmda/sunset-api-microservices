@@ -10,7 +10,7 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('create_user')
+  @MessagePattern('register_user')
   async register(@Payload() payload: CreateUserDto): Promise<ResponseUserDto> {
     if (payload.password !== payload.passwordConfirmation) {
       throw new RpcException('As senhas não coincidem');
@@ -24,12 +24,12 @@ export class AuthController {
   }
 
   @MessagePattern('login')
-  signIn(@Payload() loginDto: LoginDto) {
-    return this.authService.signIn(loginDto.email, loginDto.password);
+  async signIn(@Payload() loginDto: LoginDto) {
+    return await this.authService.signIn(loginDto.email, loginDto.password);
   }
 
   @MessagePattern('refresh_token')
-  refreshToken(@Payload() loginDto: LoginDto) {
-    return this.authService.signIn(loginDto.email, loginDto.password);
+  async refreshToken(@Payload() loginDto: LoginDto) {
+    return await this.authService.signIn(loginDto.email, loginDto.password);
   }
 }

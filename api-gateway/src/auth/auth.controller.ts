@@ -5,6 +5,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
+import { TokenDto } from './dto/token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -24,10 +25,12 @@ export class AuthController {
     return plainToInstance(ResponseUserDto, result);
   }
 
-  @Post()
+  @Post('login')
   @ApiOperation({ summary: 'Login' })
-  async login(@Body() loginDto: LoginDto): Promise<any> {
-    return await this.userService.login(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
+    const teste = await this.userService.login(loginDto);
+    console.log(teste);
+    return plainToInstance(TokenDto, teste);
   }
 
   @Post('refresh-token')
