@@ -1,12 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { User } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { omit } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 import { TokenDto } from './dto/token.dto';
+import { ResponseUserDto } from 'src/user/dto/response-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +22,7 @@ export class AuthService {
 
   async signIn(email: string, pass: string): Promise<TokenDto> {
     try {
-      const user = await this.usersService.findUserByEmail(email);
-      console.log(user);
+      const user = await this.usersService.getByEmail(email);
       if (!user || !(await bcrypt.compare(pass, user.password))) {
         throw new UnauthorizedException();
       }
@@ -30,25 +34,27 @@ export class AuthService {
         expires_in: 3600,
       });
     } catch (error) {
-      throw new RpcException(error.message);
+      throw new NotFoundException(error.message);
     }
   }
 
-  async registerUser(
-    name: string,
-    email: string,
-    password: string,
-  ): Promise<User> {
-    const existingUser = await this.usersService.findUserByEmail(email);
+  async registerUser(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+    try {
+      const existingUser = await this.usersService.getByEmail(
+        createUserDto.email,
+      );
 
-    if (existingUser) {
-      throw new RpcException('Usuário com este email já cadastrado.');
+      if (existingUser)
+        throw new NotFoundException('Usuário com este email já cadastrado.');
+
+      return await this.usersService.createUser(createUserDto);
+    } catch (error) {
+      throw new NotFoundException(error.message);
     }
-    return await this.usersService.createUser(name, email, password);
   }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.usersService.getByEmail(email);
     if (user && bcrypt.compareSync(pass, user.password)) {
       const result = omit(user, ['password']);
       return result;

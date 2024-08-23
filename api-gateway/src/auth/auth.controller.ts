@@ -4,13 +4,13 @@ import { ResponseUserDto } from 'src/user/dto/response-user.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
-import { UserService } from 'src/user/user.service';
 import { TokenDto } from './dto/token.dto';
+import { AuthService } from './auth.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Adiciona um novo usuário' })
@@ -21,21 +21,27 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Erro ao adicionar novo usuário' })
   async registerUser(@Body() userDto: CreateUserDto): Promise<ResponseUserDto> {
-    const result = await this.userService.registerUser(userDto);
+    const result = await this.authService.registerUser(userDto);
     return plainToInstance(ResponseUserDto, result);
   }
 
   @Post('login')
-  @ApiOperation({ summary: 'Login' })
+  @ApiOperation({ summary: 'Realiza login com as credenciais do usuário' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário logado com sucesso',
+    type: TokenDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado e/ou senha incorreta',
+  })
+  @ApiResponse({ status: 400, description: 'Erro ao realizar login' })
   async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
-    const teste = await this.userService.login(loginDto);
-    console.log(teste);
-    return plainToInstance(TokenDto, teste);
-  }
-
-  @Post('refresh-token')
-  @ApiOperation({ summary: 'Renovar o token' })
-  async refreshToken(@Body() loginDto: LoginDto): Promise<any> {
-    return await this.userService.login(loginDto);
+    const result = await this.authService.signIn(
+      loginDto.email,
+      loginDto.password,
+    );
+    return plainToInstance(TokenDto, result);
   }
 }

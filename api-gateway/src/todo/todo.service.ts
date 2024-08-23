@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateTodoItemDto, CreateTodoListDto } from './dto/create-todo.dto';
+import { UpdateTodoListDto } from './dto/update-todo.dto';
 
 @Injectable()
 export class TodoService {
@@ -31,9 +32,8 @@ export class TodoService {
     }
   }
 
-  async updateList(id: string, todoListDto: CreateTodoListDto) {
+  async updateList(id: string, todoListDto: UpdateTodoListDto) {
     try {
-      console.log('updateList', id, todoListDto);
       const response = await lastValueFrom(
         this.rabbitClient.send('update_list', { id, todoListDto }),
       );

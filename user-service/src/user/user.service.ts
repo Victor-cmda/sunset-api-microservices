@@ -86,11 +86,9 @@ export class UserService {
       const user = await this.userRepository.findOne({
         where: { email },
       });
-      if (!user) throw new RpcException('Usuário não encontrado.');
       return user;
     } catch (error) {
-      console.log(error.message);
-      return null;
+      throw new RpcException(error.message);
     }
   }
 }

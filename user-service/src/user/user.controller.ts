@@ -1,16 +1,30 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { isUUID } from 'class-validator';
-import { AuthGuard } from '@nestjs/passport';
+import { User } from './entity/user.entity';
 
-@UseGuards(AuthGuard('jwt'))
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @MessagePattern('register_user')
+  async registerUser(
+    @Payload() payload: CreateUserDto,
+  ): Promise<ResponseUserDto> {
+    if (payload.password !== payload.passwordConfirmation) {
+      throw new RpcException('As senhas não coincidem');
+    }
+    const user = await this.userService.createUser(
+      payload.name,
+      payload.email,
+      payload.password,
+    );
+    return plainToInstance(ResponseUserDto, user);
+  }
 
   @MessagePattern('get_user')
   async getUser(@Payload() data: { id: string }): Promise<ResponseUserDto> {
@@ -24,6 +38,14 @@ export class UserController {
     if (!user) throw new RpcException('Usuário não encontrado.');
 
     return plainToInstance(ResponseUserDto, user);
+  }
+
+  @MessagePattern('get_user_email')
+  async getUserByEmail(@Payload() data: { email: string }): Promise<any> {
+    const { email } = data;
+    const user = await this.userService.findUserByEmail(email);
+
+    return plainToInstance(User, user);
   }
 
   @MessagePattern('update_user')

@@ -8,6 +8,7 @@ import {
 } from './dto/response-todo.dto';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { isUUID } from 'class-validator';
+import { UpdateTodoListDto } from './dto/update-todo.dto';
 
 @Controller()
 export class TodoController {
@@ -39,7 +40,7 @@ export class TodoController {
 
   @MessagePattern('update_list')
   async updateList(
-    @Payload() payload: { id: string; todoListDto: CreateTodoListDto },
+    @Payload() payload: { id: string; todoListDto: UpdateTodoListDto },
   ) {
     const { id, todoListDto } = payload;
 

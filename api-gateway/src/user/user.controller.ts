@@ -24,19 +24,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Post()
-  // @ApiOperation({ summary: 'Adiciona um novo usuário' })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'Usuário criado com sucesso',
-  //   type: ResponseUserDto,
-  // })
-  // @ApiResponse({ status: 400, description: 'Erro ao adicionar novo usuário' })
-  // async createUser(@Body() userDto: CreateUserDto): Promise<ResponseUserDto> {
-  //   const result = await this.userService.createUser(userDto);
-  //   return plainToInstance(ResponseUserDto, result);
-  // }
-
   @Get(':id')
   @ApiOperation({ summary: 'Consulta um usuário por Id' })
   @ApiResponse({

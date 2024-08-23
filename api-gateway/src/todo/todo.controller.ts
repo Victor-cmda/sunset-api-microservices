@@ -20,6 +20,7 @@ import {
 import { CreateTodoItemDto, CreateTodoListDto } from './dto/create-todo.dto';
 import { plainToInstance } from 'class-transformer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateTodoListDto } from './dto/update-todo.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/todos')
@@ -62,7 +63,7 @@ export class TodoController {
   }
 
   @Put('list/:id')
-  @ApiOperation({ summary: 'Atualiza/Altera uma nova lista de tarefas' })
+  @ApiOperation({ summary: 'Atualiza/Altera uma lista de tarefas' })
   @ApiResponse({
     status: 200,
     description: 'Lista de tarefas atualizada',
@@ -74,7 +75,7 @@ export class TodoController {
   })
   async updateList(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() todoListDto: CreateTodoListDto,
+    @Body() todoListDto: UpdateTodoListDto,
   ): Promise<string> {
     return await this.todoService.updateList(id, todoListDto);
   }
