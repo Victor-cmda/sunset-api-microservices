@@ -4,21 +4,25 @@ import { UserService } from './user.service';
 import { User } from './entity/user.entity';
 import { UserController } from './user.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'USER_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'user_queue',
-          queueOptions: {
-            durable: true,
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL')],
+            queue: configService.get<string>('USER_QUEUE_NAME'),
+            queueOptions: {
+              durable: configService.get<boolean>('QUEUE_DURABLE'),
+            },
           },
-        },
+        }),
       },
     ]),
   ],

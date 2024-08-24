@@ -1,12 +1,16 @@
 FROM node:18
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
+COPY ./.env.production ./.env
 
 COPY . .
+
+RUN npm install --quiet --no-optional --no-fund --loglevel=error
+
+RUN npm run build
 
 EXPOSE 3000
 

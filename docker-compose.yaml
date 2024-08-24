@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data:/data/postgres
     ports:
       - "5432:5432"
   
@@ -23,14 +23,6 @@ services:
 
   user-service:
     build: ./user-service
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: 1234
-      DB_DATABASE: postgres
-      DB_SCHEMA: user_schema
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       - postgres
       - rabbitmq
@@ -39,14 +31,6 @@ services:
 
   todo-service:
     build: ./todo-service
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: 1234
-      DB_DATABASE: postgres
-      DB_SCHEMA: todo_schema
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       - postgres
       - rabbitmq
@@ -55,9 +39,6 @@ services:
     
   api-gateway:
     build: ./api-gateway
-    environment:
-      JWT_ACCESS_SECRET: c9316984e771f607fe2b10442f2f5d4c66183445c362dd1c28b939817a57ad58
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       - user-service
       - todo-service

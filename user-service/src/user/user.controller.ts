@@ -43,6 +43,7 @@ export class UserController {
   @MessagePattern('get_user_email')
   async getUserByEmail(@Payload() data: { email: string }): Promise<any> {
     const { email } = data;
+    console.log('email', email);
     const user = await this.userService.findUserByEmail(email);
 
     return plainToInstance(User, user);

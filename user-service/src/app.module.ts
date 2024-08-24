@@ -7,18 +7,18 @@ import { User } from './user/entity/user.entity';
 @Module({
   imports: [
     UserModule,
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: './src/.env' }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: './.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: Number(configService.get('DB_PORT', 5431)),
-        username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', '1234'),
-        database: configService.get('DB_DATABASE', 'postgres'),
-        schema: configService.get('DB_SCHEMA', 'public'),
+        host: configService.get('DB_HOST'),
+        port: Number(configService.get('DB_PORT')),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        schema: configService.get('DB_SCHEMA'),
         entities: [User],
         synchronize: true,
       }),
