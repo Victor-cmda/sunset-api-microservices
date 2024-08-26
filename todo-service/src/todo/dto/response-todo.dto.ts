@@ -9,6 +9,9 @@ export class ResponseTodoListDto {
   name: string;
 
   @Expose()
+  color: string;
+
+  @Expose()
   createdAt: string;
 
   @Expose()

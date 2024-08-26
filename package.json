@@ -6,13 +6,15 @@
     "api-gateway",
     "auth-service",
     "user-service",
-    "todo-service"
+    "todo-service",
+    "sunset-app"
   ],
   "scripts": {
     "start:gateway": "npm --prefix api-gateway start",
     "start:auth": "npm --prefix auth-service start",
     "start:user": "npm --prefix user-service start",
     "start:todo": "npm --prefix todo-service start",
+    "start:app": "npm --prefix sunset-app start",
     "start:all": "npm run start:gateway & npm run start:auth & npm run start:user & npm run start:todo"
   },
   "keywords": [],

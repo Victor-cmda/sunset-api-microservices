@@ -45,6 +45,13 @@ services:
       - rabbitmq
     ports:
       - "3000:3000"
+  
+  sunset-app:
+    build: ./sunset-app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
 
 volumes:
   postgres_data:

@@ -36,6 +36,10 @@ export class ResponseTodoListDto {
 
   @ApiProperty()
   @Expose()
+  color: string;
+
+  @ApiProperty()
+  @Expose()
   createdAt: string;
 
   @ApiProperty()

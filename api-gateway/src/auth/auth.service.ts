@@ -29,6 +29,7 @@ export class AuthService {
       const payload = { email: result.email, sub: result.id };
       const token = this.jwtService.sign(payload);
       return plainToInstance(TokenDto, {
+        user_id: result.id,
         access_token: token,
         expires_in: 3600,
       });
