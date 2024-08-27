@@ -129,7 +129,7 @@ export default function Login() {
                 }}
               >
                 <img
-                  src="./public/login-no-background.png"
+                  src="./login-no-background.png"
                   alt="Login"
                   style={{
                     maxWidth: "100%",

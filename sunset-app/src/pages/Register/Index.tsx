@@ -11,6 +11,7 @@ import {
   Stack,
   createTheme,
   ThemeProvider,
+  SnackbarCloseReason,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useNavigate } from "react-router-dom";
@@ -20,12 +21,11 @@ import * as Yup from "yup";
 import axios from "axios";
 import { registerUser } from "../../services/apiService";
 
-const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const Alert = forwardRef<HTMLDivElement, AlertProps>(
+  function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  }
+);
 
 const darkTheme = createTheme({
   palette: {
@@ -98,14 +98,15 @@ export default function Register() {
   };
 
   const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
+    _: React.SyntheticEvent<Element, Event> | Event,
+    reason?: SnackbarCloseReason
   ) => {
     if (reason === "clickaway") {
       return;
     }
     setOpen(false);
   };
+  
 
   return (
     <>
@@ -149,7 +150,7 @@ export default function Register() {
                 }}
               >
                 <img
-                  src="./public/login-no-background.png"
+                  src="./login-no-background.png"
                   alt="Login"
                   style={{
                     maxWidth: "100%",
